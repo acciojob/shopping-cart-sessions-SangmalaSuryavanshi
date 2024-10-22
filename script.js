@@ -138,3 +138,40 @@ clearCartBtn.addEventListener("click", () => {
 // Initial render
 renderProducts();
 renderCart();
+
+describe("Shopping Cart Tests", () => {
+  // Clear session storage before each test
+  beforeEach(() => {
+    cy.visit(baseUrl + "/main.html");
+    cy.window().then((win) => {
+      win.sessionStorage.clear(); // Clear storage before each test
+    });
+  });
+
+  it("should display products and an empty cart initially", () => {
+    cy.get("h1").contains("Products");
+    cy.get("ul#product-list").children("li").its("length").should("eq", 5);
+    cy.get("h2").contains("Shopping Cart");
+    cy.get("ul#cart-list").should("be.empty");
+    cy.get("button#clear-cart-btn").contains("Clear Cart");
+  });
+
+  it("should add items to the cart", () => {
+    // Click the first product's "Add to Cart" button
+    cy.get("ul#product-list").children("li").first().children("button").click();
+    cy.get("ul#cart-list").children("li").its("length").should("eq", 1);
+    
+    // Click the last product's "Add to Cart" button
+    cy.get("ul#product-list").children("li").last().children("button").click();
+    cy.get("ul#cart-list").children("li").its("length").should("eq", 2);
+  });
+
+  it("should validate session storage after adding to the cart", () => {
+    cy.get("ul#product-list").children("li").first().children("button").click();
+    cy.window().its("sessionStorage").invoke("getItem", "cart").should("eq", JSON.stringify({ "1": 1 }));
+    
+    cy.get("ul#product-list").children("li").last().children("button").click();
+    cy.window().its("sessionStorage").invoke("getItem", "cart").should("eq", JSON.stringify({ "1": 1, "5": 1 })); // Adjust based on actual IDs
+  });
+});
+
