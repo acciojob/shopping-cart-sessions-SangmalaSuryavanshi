@@ -1,6 +1,5 @@
 
 describe("Shopping Cart Tests", () => {
-  // Clear session storage before each test
   beforeEach(() => {
     cy.visit(baseUrl + "/main.html");
     cy.window().then((win) => {
@@ -17,11 +16,9 @@ describe("Shopping Cart Tests", () => {
   });
 
   it("should add items to the cart", () => {
-    // Click the first product's "Add to Cart" button
     cy.get("ul#product-list").children("li").first().children("button").click();
     cy.get("ul#cart-list").children("li").its("length").should("eq", 1);
     
-    // Click the last product's "Add to Cart" button
     cy.get("ul#product-list").children("li").last().children("button").click();
     cy.get("ul#cart-list").children("li").its("length").should("eq", 2);
   });
@@ -34,6 +31,7 @@ describe("Shopping Cart Tests", () => {
     cy.window().its("sessionStorage").invoke("getItem", "cart").should("eq", JSON.stringify({ "1": 1, "5": 1 })); // Adjust based on actual IDs
   });
 });
+
 
 // Product data
 const products = [
